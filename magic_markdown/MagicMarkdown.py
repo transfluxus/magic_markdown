@@ -5,6 +5,7 @@ from IPython.core.magic import Magics, magics_class, cell_magic
 
 import pystache
 
+
 @magics_class
 class MagicMarkdown(Magics):
     """
@@ -20,13 +21,13 @@ class MagicMarkdown(Magics):
         if not self.logger.hasHandlers():
             self.logger.addHandler(logging.StreamHandler())        
         self.logger.setLevel(logging.WARNING)
-        # inject our store in user availlable namespace under __mystore
-        shell.user_ns['__mystore'] = self._store
+        self.shell = shell
+
 
     def eval_or_error(self, statement):
-	res = eval(statement)
+        res = eval(statement, self.shell.user_ns)
         try:
-            res = eval(statement)
+            res = eval(statement, self.shell.user_ns)
         except:
             self.logger.warning('eval_or_error: %s' %(statement))
             res = ''
@@ -81,5 +82,3 @@ class MagicMarkdown(Magics):
             else:
                 display(chunk)
         return None 
-
-get_ipython().register_magics(MagicMarkdown)
